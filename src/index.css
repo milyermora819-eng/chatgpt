@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes nitro-shimmer {
+  from {
+    background-position: 200% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+
+@keyframes nitro-rainbow {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes nitro-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 4px var(--nitro-color), 0 0 10px var(--nitro-color);
+  }
+  50% {
+    text-shadow: 0 0 1px var(--nitro-color), 0 0 3px var(--nitro-color);
+  }
+}
+
+@keyframes nitro-ring-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--nitro-color);
+  }
+  50% {
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+
+@keyframes nitro-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.04);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes gradient-drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@layer components {
+  .nitro-name-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--nitro-color) 0%,
+      #ffffff 50%,
+      var(--nitro-color) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: nitro-shimmer 2.5s linear infinite;
+  }
+
+  .nitro-name-rainbow {
+    background-image: linear-gradient(90deg, #f43f5e, #f59e0b, #22c55e, #0ea5e9, #ec4899, #f43f5e);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: nitro-shimmer 4s linear infinite;
+  }
+
+  .nitro-name-glow {
+    animation: nitro-glow 2s ease-in-out infinite;
+  }
+
+  .nitro-ring-pulse {
+    animation: nitro-ring-pulse 1.8s ease-in-out infinite;
+  }
+
+  .nitro-ring-spin {
+    box-shadow: 0 0 0 2px var(--nitro-color);
+    animation: nitro-ring-spin 3s linear infinite;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 150ms ease-out both;
+  }
+  .animate-scale-in {
+    animation: scale-in 180ms ease-out both;
+  }
+  .animate-slide-up {
+    animation: slide-up 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-float {
+    animation: float 9s ease-in-out infinite;
+  }
+  .animate-pop {
+    animation: pop 260ms ease-out both;
+  }
+  .animate-shake {
+    animation: shake 380ms ease-in-out;
+  }
+  .animate-gradient {
+    animation: gradient-drift 12s ease-in-out infinite;
+  }
+  .animate-sheen {
+    animation: sheen 1.6s ease-in-out infinite;
+  }
+}
+
+body {
+  @apply bg-zinc-950 antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
