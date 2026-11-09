@@ -2,7 +2,7 @@ import { Crown, MessageCircle, X } from 'lucide-react';
 import { useEffect } from 'react';
 import Avatar from '@/components/Avatar';
 import MemberName from '@/components/MemberName';
-import { AVATAR_RING_CLASSES } from '@/lib/nitro';
+import { AVATAR_RING_CLASSES, BANNER_EFFECT_CLASSES } from '@/lib/nitro';
 import type { MemberSummary } from '@/lib/types';
 import { primaryButtonClass } from '@/lib/ui';
 
@@ -32,6 +32,7 @@ export default function ProfileCard({ member, isSelf, onClose, onMessage }: Prof
       <div className="animate-scale-in w-full max-w-sm overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl">
         <div className="relative h-24 overflow-hidden" style={{ backgroundColor: member.banner_color }}>
           {member.banner_url && <img src={member.banner_url} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+          <div aria-hidden className={`pointer-events-none absolute inset-0 ${BANNER_EFFECT_CLASSES[member.banner_effect]}`} />
           <button
             type="button"
             onClick={onClose}

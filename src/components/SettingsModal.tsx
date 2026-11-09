@@ -7,7 +7,7 @@ import ProfileStyleEditor from '@/components/ProfileStyleEditor';
 import { updateMember, updateMemberMedia, type MemberFields } from '@/lib/api/members';
 import { uploadProfileImage } from '@/lib/api/media';
 import { errorMessage } from '@/lib/errors';
-import { AVATAR_RING_CLASSES } from '@/lib/nitro';
+import { AVATAR_RING_CLASSES, BANNER_EFFECT_CLASSES } from '@/lib/nitro';
 import { PROFILE_COLORS } from '@/lib/palette';
 import { errorTextClass, inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from '@/lib/ui';
 import type { Member } from '@/lib/types';
@@ -33,6 +33,7 @@ export default function SettingsModal({ member, onClose, onSaved, onSwitchAccoun
     banner_color: member.banner_color,
     name_effect: member.name_effect,
     avatar_ring: member.avatar_ring,
+    banner_effect: member.banner_effect,
     nitro_tag: member.nitro_tag,
   });
   const [saving, setSaving] = useState(false);
@@ -214,6 +215,7 @@ export default function SettingsModal({ member, onClose, onSaved, onSwitchAccoun
                 {member.banner_url && (
                   <img src={member.banner_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 )}
+                <div aria-hidden className={`pointer-events-none absolute inset-0 ${BANNER_EFFECT_CLASSES[form.banner_effect]}`} />
               </div>
             </MediaUploader>
           <ProfileStyleEditor
@@ -221,6 +223,7 @@ export default function SettingsModal({ member, onClose, onSaved, onSwitchAccoun
               banner_color: form.banner_color,
               name_effect: form.name_effect,
               avatar_ring: form.avatar_ring,
+              banner_effect: form.banner_effect,
               nitro_tag: form.nitro_tag,
             }}
             onChange={patch}

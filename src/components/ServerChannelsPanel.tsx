@@ -1,18 +1,20 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
+import { setChannelCategory } from '@/lib/api/categories';
 import { deleteChannel, renameChannel } from '@/lib/api/servers';
 import { errorMessage } from '@/lib/errors';
 import { toChannelSlug } from '@/lib/slug';
 import { errorTextClass, inputClass } from '@/lib/ui';
-import type { Channel } from '@/lib/types';
+import type { Channel, ChannelCategory } from '@/lib/types';
 
 interface ServerChannelsPanelProps {
   channels: Channel[];
+  categories: ChannelCategory[];
   disabled: boolean;
   onChanged: () => void;
 }
 
-export default function ServerChannelsPanel({ channels, disabled, onChanged }: ServerChannelsPanelProps) {
+export default function ServerChannelsPanel({ channels, categories, disabled, onChanged }: ServerChannelsPanelProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export default function ServerChannelsPanel({ channels, disabled, onChanged }: S
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-400">Rename or remove channels. Removing a channel also removes its messages.</p>
+      <p className="text-sm text-zinc-400">Rename, move, or remove channels. Removing a channel also removes its messages.</p>
       <ul className="space-y-2">
         {channels.map((channel) => {
           const isEditing = editingId === channel.id;
@@ -68,6 +70,29 @@ export default function ServerChannelsPanel({ channels, disabled, onChanged }: S
                 />
               ) : (
                 <span className="min-w-0 flex-1 truncate text-sm text-zinc-200">#{channel.name}</span>
+              )}
+
+              {!disabled && !isEditing && (
+                <select
+                  value={channel.category_id ?? ''}
+                  onChange={(event) =>
+                    void runChannelAction(
+                      channel.id,
+                      () => setChannelCategory(channel.id, event.target.value || null),
+                      'Could not move the channel.',
+                    )
+                  }
+                  disabled={isBusy}
+                  aria-label={`Category for #${channel.name}`}
+                  className="max-w-[9rem] rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-200"
+                >
+                  <option value="">No category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               )}
 
               {!disabled && isEditing && (

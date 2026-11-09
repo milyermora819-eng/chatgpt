@@ -11,11 +11,12 @@ export type MemberFields = Pick<
   | 'banner_color'
   | 'name_effect'
   | 'avatar_ring'
+  | 'banner_effect'
   | 'nitro_tag'
 >;
 
 export const MEMBER_SUMMARY_COLUMNS =
-  'id, display_name, color, status, pronouns, bio, banner_color, name_effect, avatar_ring, nitro_tag, avatar_url, banner_url';
+  'id, display_name, color, status, pronouns, bio, banner_color, name_effect, avatar_ring, banner_effect, nitro_tag, avatar_url, banner_url';
 
 export async function fetchMember(id: string): Promise<Member | null> {
   const { data, error } = await supabase.from('members').select('*').eq('id', id).maybeSingle();

@@ -36,7 +36,7 @@ export default function ChatShell({ member, onMemberChange, onSwitchAccount }: C
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const activeServer: Server | null = servers.find((s) => s.id === activeServerId) ?? servers[0] ?? null;
-  const { channels, refresh: refreshChannels } = useChannels(activeServer?.id ?? null);
+  const { channels, categories, refresh: refreshChannels } = useChannels(activeServer?.id ?? null);
   const activeChannel: Channel | null = channels.find((c) => c.id === activeChannelId) ?? channels[0] ?? null;
   const activeThread = threads.find((thread) => thread.id === activeThreadId) ?? null;
 
@@ -124,6 +124,7 @@ export default function ChatShell({ member, onMemberChange, onSwitchAccount }: C
           <ChannelSidebar
             server={activeServer}
             channels={channels}
+            categories={categories}
             activeChannelId={activeChannel?.id ?? null}
             member={member}
             onSelectChannel={(channelId) => {
@@ -174,6 +175,7 @@ export default function ChatShell({ member, onMemberChange, onSwitchAccount }: C
       {openModal === 'channel' && activeServer && (
         <CreateChannelModal
           serverId={activeServer.id}
+          categories={categories}
           onClose={() => setOpenModal(null)}
           onCreated={handleChannelCreated}
         />
@@ -182,6 +184,7 @@ export default function ChatShell({ member, onMemberChange, onSwitchAccount }: C
         <ServerSettingsModal
           server={activeServer}
           channels={channels}
+          categories={categories}
           isOwner={activeServer.owner_id === member.id}
           onClose={() => setOpenModal(null)}
           onServerChange={() => void refreshServers()}

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { AVATAR_RINGS, NAME_EFFECTS, type NitroFields } from '@/lib/nitro';
+import { AVATAR_RINGS, BANNER_EFFECTS, NAME_EFFECTS, type NitroFields } from '@/lib/nitro';
 import { PROFILE_COLORS } from '@/lib/palette';
 import { inputClass, labelClass } from '@/lib/ui';
 
@@ -88,6 +88,14 @@ export default function ProfileStyleEditor({ value, onChange }: ProfileStyleEdit
           options={AVATAR_RINGS}
           selected={value.avatar_ring}
           onSelect={(avatar_ring) => onChange({ avatar_ring })}
+        />
+      </Field>
+
+      <Field label="Banner effect">
+        <OptionButtons
+          options={BANNER_EFFECTS}
+          selected={value.banner_effect}
+          onSelect={(banner_effect) => onChange({ banner_effect })}
         />
       </Field>
 

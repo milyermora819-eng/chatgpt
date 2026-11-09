@@ -1,5 +1,6 @@
-export type NameEffect = 'none' | 'shimmer' | 'rainbow' | 'glow';
-export type AvatarRing = 'none' | 'pulse' | 'spin';
+export type NameEffect = 'none' | 'shimmer' | 'rainbow' | 'glow' | 'aurora' | 'sunset';
+export type AvatarRing = 'none' | 'pulse' | 'spin' | 'halo' | 'ember';
+export type BannerEffect = 'none' | 'sheen' | 'stars' | 'waves';
 
 export interface Member {
   id: string;
@@ -11,6 +12,7 @@ export interface Member {
   banner_color: string;
   name_effect: NameEffect;
   avatar_ring: AvatarRing;
+  banner_effect: BannerEffect;
   nitro_tag: string;
   avatar_url: string | null;
   banner_url: string | null;
@@ -28,6 +30,7 @@ export type MemberSummary = Pick<
   | 'banner_color'
   | 'name_effect'
   | 'avatar_ring'
+  | 'banner_effect'
   | 'nitro_tag'
   | 'avatar_url'
   | 'banner_url'

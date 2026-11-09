@@ -4,16 +4,18 @@ import { createChannel } from '@/lib/api/servers';
 import { errorMessage } from '@/lib/errors';
 import { toChannelSlug } from '@/lib/slug';
 import { errorTextClass, inputClass, labelClass, primaryButtonClass } from '@/lib/ui';
-import type { Channel } from '@/lib/types';
+import type { Channel, ChannelCategory } from '@/lib/types';
 
 interface CreateChannelModalProps {
   serverId: string;
+  categories: ChannelCategory[];
   onClose: () => void;
   onCreated: (channel: Channel) => void;
 }
 
-export default function CreateChannelModal({ serverId, onClose, onCreated }: CreateChannelModalProps) {
+export default function CreateChannelModal({ serverId, categories, onClose, onCreated }: CreateChannelModalProps) {
   const [name, setName] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +27,7 @@ export default function CreateChannelModal({ serverId, onClose, onCreated }: Cre
     setSubmitting(true);
     setError(null);
     try {
-      onCreated(await createChannel(serverId, slug));
+      onCreated(await createChannel(serverId, slug, categoryId || null));
     } catch (err) {
       setError(errorMessage(err, 'Could not create the channel. Please try again.'));
       setSubmitting(false);
@@ -52,6 +54,24 @@ export default function CreateChannelModal({ serverId, onClose, onCreated }: Cre
               autoFocus
             />
           </div>
+        </div>
+        <div>
+          <label htmlFor="channel-category" className={labelClass}>
+            Category
+          </label>
+          <select
+            id="channel-category"
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+            className={inputClass}
+          >
+            <option value="">No category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         {error && <p className={errorTextClass}>{error}</p>}
         <button type="submit" disabled={!slug || submitting} className={`${primaryButtonClass} w-full py-2.5`}>

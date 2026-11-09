@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import Modal from '@/components/Modal';
+import ServerCategoriesPanel from '@/components/ServerCategoriesPanel';
 import ServerChannelsPanel from '@/components/ServerChannelsPanel';
 import ServerInvitePanel from '@/components/ServerInvitePanel';
 import { deleteServer, updateServer, type ServerFields } from '@/lib/api/servers';
@@ -7,13 +8,14 @@ import { errorMessage } from '@/lib/errors';
 import { PROFILE_COLORS } from '@/lib/palette';
 import { readableTextColor } from '@/lib/color';
 import { errorTextClass, inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from '@/lib/ui';
-import type { Channel, Server } from '@/lib/types';
+import type { Channel, ChannelCategory, Server } from '@/lib/types';
 
-type Tab = 'overview' | 'channels' | 'invites' | 'danger';
+type Tab = 'overview' | 'channels' | 'categories' | 'invites' | 'danger';
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'overview', label: 'Overview' },
   { value: 'channels', label: 'Channels' },
+  { value: 'categories', label: 'Categories' },
   { value: 'invites', label: 'Invites' },
   { value: 'danger', label: 'Delete' },
 ];
@@ -21,6 +23,7 @@ const TABS: { value: Tab; label: string }[] = [
 interface ServerSettingsModalProps {
   server: Server;
   channels: Channel[];
+  categories: ChannelCategory[];
   isOwner: boolean;
   onClose: () => void;
   onServerChange: () => void;
@@ -31,6 +34,7 @@ interface ServerSettingsModalProps {
 export default function ServerSettingsModal({
   server,
   channels,
+  categories,
   isOwner,
   onClose,
   onServerChange,
@@ -41,7 +45,7 @@ export default function ServerSettingsModal({
 
   return (
     <Modal title="Server settings" onClose={onClose}>
-      <div className="mb-5 grid grid-cols-4 rounded-lg bg-zinc-950 p-1">
+      <div className="mb-5 grid grid-cols-5 rounded-lg bg-zinc-950 p-1">
         {TABS.filter((option) => isOwner || option.value !== 'danger').map((option) => (
           <button
             key={option.value}
@@ -64,7 +68,20 @@ export default function ServerSettingsModal({
 
       {tab === 'overview' && <OverviewForm server={server} disabled={!isOwner} onSaved={onServerChange} />}
       {tab === 'channels' && (
-        <ServerChannelsPanel channels={channels} disabled={!isOwner} onChanged={onChannelsChange} />
+        <ServerChannelsPanel
+          channels={channels}
+          categories={categories}
+          disabled={!isOwner}
+          onChanged={onChannelsChange}
+        />
+      )}
+      {tab === 'categories' && (
+        <ServerCategoriesPanel
+          serverId={server.id}
+          categories={categories}
+          disabled={!isOwner}
+          onChanged={onChannelsChange}
+        />
       )}
       {tab === 'invites' && <ServerInvitePanel server={server} disabled={!isOwner} onChanged={onServerChange} />}
       {tab === 'danger' && isOwner && <DeleteServerPanel server={server} onDeleted={onDeleted} />}
