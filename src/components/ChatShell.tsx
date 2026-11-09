@@ -22,10 +22,10 @@ type OpenModal = 'server' | 'serverSettings' | 'channel' | 'settings' | 'newDM' 
 interface ChatShellProps {
   member: Member;
   onMemberChange: (member: Member) => void;
-  onSignOut: () => void;
+  onSwitchAccount: () => void;
 }
 
-export default function ChatShell({ member, onMemberChange, onSignOut }: ChatShellProps) {
+export default function ChatShell({ member, onMemberChange, onSwitchAccount }: ChatShellProps) {
   const { servers, loading, error, refresh: refreshServers } = useServers(member.id);
   const { threads, loading: threadsLoading, error: threadsError, refresh: refreshThreads } = useDMThreads(member.id);
   const [mode, setMode] = useState<Mode>('servers');
@@ -205,7 +205,7 @@ export default function ChatShell({ member, onMemberChange, onSignOut }: ChatShe
             onMemberChange(updated);
             setOpenModal(null);
           }}
-          onSignOut={onSignOut}
+          onSwitchAccount={onSwitchAccount}
           onMemberUpdated={onMemberChange}
         />
       )}

@@ -1,26 +1,34 @@
 import { useEffect, useState } from 'react';
 import ChatShell from '@/components/ChatShell';
 import Onboarding from '@/components/Onboarding';
-import { fetchMember } from '@/lib/api/members';
+import { fetchMembersByIds } from '@/lib/api/members';
 import { errorMessage } from '@/lib/errors';
-import { clearStoredMemberId, getStoredMemberId } from '@/lib/identity';
+import {
+  getCurrentAccountId,
+  keepAccounts,
+  listAccountIds,
+  rememberAccount,
+  setCurrentAccountId,
+} from '@/lib/identity';
 import type { Member } from '@/lib/types';
 
 function App() {
   const [member, setMember] = useState<Member | null>(null);
+  const [savedAccounts, setSavedAccounts] = useState<Member[]>([]);
   const [bootstrapping, setBootstrapping] = useState(true);
   const [bootError, setBootError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedId = getStoredMemberId();
-    if (!storedId) {
-      setBootstrapping(false);
-      return;
-    }
-    fetchMember(storedId)
+    const storedIds = listAccountIds();
+    fetchMembersByIds(storedIds)
       .then((found) => {
-        if (!found) clearStoredMemberId();
-        setMember(found);
+        const accounts = storedIds
+          .map((id) => found.find((account) => account.id === id))
+          .filter((account): account is Member => Boolean(account));
+        keepAccounts(accounts.map((account) => account.id));
+        const currentId = getCurrentAccountId();
+        setSavedAccounts(accounts);
+        setMember(accounts.find((account) => account.id === currentId) ?? null);
       })
       .catch((err: unknown) => setBootError(errorMessage(err, 'Could not reach Lounge. Please refresh the page.')))
       .finally(() => setBootstrapping(false));
@@ -43,14 +51,33 @@ function App() {
   }
 
   if (!member) {
-    return <Onboarding onCreated={setMember} />;
+    return (
+      <Onboarding
+        savedAccounts={savedAccounts}
+        onCreated={(created) => {
+          rememberAccount(created.id);
+          setSavedAccounts((accounts) => [...accounts.filter((account) => account.id !== created.id), created]);
+          setMember(created);
+        }}
+        onSelectAccount={(account) => {
+          rememberAccount(account.id);
+          setMember(account);
+        }}
+      />
+    );
   }
 
   return (
     <ChatShell
       member={member}
-      onMemberChange={setMember}
-      onSignOut={() => setMember(null)}
+      onMemberChange={(updated) => {
+        setMember(updated);
+        setSavedAccounts((accounts) => accounts.map((account) => (account.id === updated.id ? updated : account)));
+      }}
+      onSwitchAccount={() => {
+        setCurrentAccountId(null);
+        setMember(null);
+      }}
     />
   );
 }

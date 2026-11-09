@@ -3,13 +3,14 @@ import { useState, type CSSProperties, type FormEvent } from 'react';
 import Avatar from '@/components/Avatar';
 import { createMember } from '@/lib/api/members';
 import { errorMessage } from '@/lib/errors';
-import { storeMemberId } from '@/lib/identity';
 import { PROFILE_COLORS } from '@/lib/palette';
 import { errorTextClass, inputClass, labelClass } from '@/lib/ui';
 import type { Member } from '@/lib/types';
 
 interface OnboardingProps {
+  savedAccounts: Member[];
   onCreated: (member: Member) => void;
+  onSelectAccount: (member: Member) => void;
 }
 
 const FEATURES = [
@@ -23,7 +24,7 @@ function stagger(index: number): CSSProperties {
   return { animationDelay: `${120 + index * 90}ms` };
 }
 
-export default function Onboarding({ onCreated }: OnboardingProps) {
+export default function Onboarding({ savedAccounts, onCreated, onSelectAccount }: OnboardingProps) {
   const [displayName, setDisplayName] = useState('');
   const [color, setColor] = useState(PROFILE_COLORS[0]);
   const [submitting, setSubmitting] = useState(false);
@@ -38,7 +39,6 @@ export default function Onboarding({ onCreated }: OnboardingProps) {
     setError(null);
     try {
       const member = await createMember({ display_name: trimmedName, color, status: '' });
-      storeMemberId(member.id);
       onCreated(member);
     } catch (err) {
       setError(errorMessage(err, 'Could not create your profile. Please try again.'));
@@ -99,6 +99,31 @@ export default function Onboarding({ onCreated }: OnboardingProps) {
             <h2 className="text-2xl font-bold text-zinc-100">Welcome to Lounge</h2>
             <p className="mt-2 text-sm text-zinc-400">Pick a name and color to get started. You can personalize everything later.</p>
           </div>
+
+          {savedAccounts.length > 0 && (
+            <div className="mb-6">
+              <span className={labelClass}>Continue as</span>
+              <ul className="space-y-2">
+                {savedAccounts.map((account, index) => (
+                  <li key={account.id} className="animate-slide-up" style={{ animationDelay: `${index * 60}ms` }}>
+                    <button
+                      type="button"
+                      onClick={() => onSelectAccount(account)}
+                      className="flex w-full items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/60 px-3 py-2.5 text-left transition hover:border-emerald-500/50 hover:bg-zinc-900 active:scale-[0.99]"
+                    >
+                      <Avatar name={account.display_name} color={account.color} imageUrl={account.avatar_url} size="sm" />
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-zinc-100">{account.display_name}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-zinc-500">
+                <span className="h-px flex-1 bg-zinc-800" />
+                or create a new profile
+                <span className="h-px flex-1 bg-zinc-800" />
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5">

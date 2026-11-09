@@ -40,6 +40,13 @@ export async function createMember(fields: Pick<MemberFields, 'display_name' | '
   return data;
 }
 
+export async function fetchMembersByIds(ids: string[]): Promise<Member[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase.from('members').select('*').in('id', ids);
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function updateMemberMedia(
   id: string,
   fields: Partial<Pick<Member, 'avatar_url' | 'banner_url'>>,

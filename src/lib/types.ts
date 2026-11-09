@@ -44,10 +44,18 @@ export interface Server {
   created_at: string;
 }
 
+export interface ChannelCategory {
+  id: string;
+  server_id: string;
+  name: string;
+  created_at: string;
+}
+
 export interface Channel {
   id: string;
   server_id: string;
   name: string;
+  category_id: string | null;
   created_at: string;
 }
 

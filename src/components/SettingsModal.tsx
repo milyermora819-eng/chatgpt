@@ -1,4 +1,4 @@
-import { LogOut } from 'lucide-react';
+import { ArrowLeftRight } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import Avatar from '@/components/Avatar';
 import Modal from '@/components/Modal';
@@ -7,7 +7,6 @@ import ProfileStyleEditor from '@/components/ProfileStyleEditor';
 import { updateMember, updateMemberMedia, type MemberFields } from '@/lib/api/members';
 import { uploadProfileImage } from '@/lib/api/media';
 import { errorMessage } from '@/lib/errors';
-import { clearStoredMemberId } from '@/lib/identity';
 import { AVATAR_RING_CLASSES } from '@/lib/nitro';
 import { PROFILE_COLORS } from '@/lib/palette';
 import { errorTextClass, inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from '@/lib/ui';
@@ -19,11 +18,11 @@ interface SettingsModalProps {
   member: Member;
   onClose: () => void;
   onSaved: (member: Member) => void;
-  onSignOut: () => void;
+  onSwitchAccount: () => void;
   onMemberUpdated: (member: Member) => void;
 }
 
-export default function SettingsModal({ member, onClose, onSaved, onSignOut, onMemberUpdated }: SettingsModalProps) {
+export default function SettingsModal({ member, onClose, onSaved, onSwitchAccount, onMemberUpdated }: SettingsModalProps) {
   const [tab, setTab] = useState<Tab>('profile');
   const [form, setForm] = useState<MemberFields>({
     display_name: member.display_name,
@@ -74,11 +73,6 @@ export default function SettingsModal({ member, onClose, onSaved, onSignOut, onM
       setError(errorMessage(err, 'Could not save your profile. Please try again.'));
       setSaving(false);
     }
-  };
-
-  const signOut = () => {
-    clearStoredMemberId();
-    onSignOut();
   };
 
   return (
@@ -237,8 +231,8 @@ export default function SettingsModal({ member, onClose, onSaved, onSignOut, onM
         {error && <p className={errorTextClass}>{error}</p>}
 
         <div className="flex flex-col gap-3 border-t border-zinc-800 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <button type="button" onClick={signOut} className={secondaryButtonClass}>
-            <LogOut size={16} />
+          <button type="button" onClick={onSwitchAccount} className={secondaryButtonClass}>
+            <ArrowLeftRight size={16} />
             Switch profile
           </button>
           <button type="submit" disabled={!trimmedName || saving} className={primaryButtonClass}>

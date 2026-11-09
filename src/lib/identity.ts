@@ -1,13 +1,34 @@
-const MEMBER_ID_KEY = 'chat.memberId';
+const ACCOUNTS_KEY = 'lounge.accounts';
+const CURRENT_KEY = 'lounge.currentAccount';
 
-export function getStoredMemberId(): string | null {
-  return localStorage.getItem(MEMBER_ID_KEY);
+function readAccountIds(): string[] {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) ?? '[]');
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+  } catch {
+    return [];
+  }
 }
 
-export function storeMemberId(id: string): void {
-  localStorage.setItem(MEMBER_ID_KEY, id);
+export function listAccountIds(): string[] {
+  return readAccountIds();
 }
 
-export function clearStoredMemberId(): void {
-  localStorage.removeItem(MEMBER_ID_KEY);
+export function keepAccounts(ids: string[]): void {
+  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(ids));
+}
+
+export function getCurrentAccountId(): string | null {
+  return localStorage.getItem(CURRENT_KEY);
+}
+
+export function setCurrentAccountId(id: string | null): void {
+  if (id) localStorage.setItem(CURRENT_KEY, id);
+  else localStorage.removeItem(CURRENT_KEY);
+}
+
+export function rememberAccount(id: string): void {
+  const ids = readAccountIds();
+  if (!ids.includes(id)) keepAccounts([...ids, id]);
+  setCurrentAccountId(id);
 }

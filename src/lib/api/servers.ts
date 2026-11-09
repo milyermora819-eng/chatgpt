@@ -71,10 +71,10 @@ export async function fetchChannels(serverId: string): Promise<Channel[]> {
   return data;
 }
 
-export async function createChannel(serverId: string, name: string): Promise<Channel> {
+export async function createChannel(serverId: string, name: string, categoryId: string | null): Promise<Channel> {
   const { data, error } = await supabase
     .from('channels')
-    .insert({ server_id: serverId, name })
+    .insert({ server_id: serverId, name, category_id: categoryId })
     .select()
     .single();
   if (error) throw new Error(error.message);

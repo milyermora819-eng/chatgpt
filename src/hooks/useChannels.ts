@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
+import { fetchCategories } from '@/lib/api/categories';
 import { fetchChannels } from '@/lib/api/servers';
 import { supabase } from '@/lib/supabase';
 import { errorMessage } from '@/lib/errors';
-import type { Channel } from '@/lib/types';
+import type { Channel, ChannelCategory } from '@/lib/types';
 
 export function useChannels(serverId: string | null) {
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [categories, setCategories] = useState<ChannelCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!serverId) return;
     try {
-      setChannels(await fetchChannels(serverId));
+      const [nextChannels, nextCategories] = await Promise.all([fetchChannels(serverId), fetchCategories(serverId)]);
+      setChannels(nextChannels);
+      setCategories(nextCategories);
       setError(null);
     } catch (err) {
       setError(errorMessage(err, 'Could not load channels.'));
@@ -24,6 +28,7 @@ export function useChannels(serverId: string | null) {
   useEffect(() => {
     if (!serverId) {
       setChannels([]);
+      setCategories([]);
       return;
     }
     setLoading(true);
@@ -34,6 +39,9 @@ export function useChannels(serverId: string | null) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'channels' }, () => {
         void refresh();
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'channel_categories' }, () => {
+        void refresh();
+      })
       .subscribe();
 
     return () => {
@@ -41,5 +49,5 @@ export function useChannels(serverId: string | null) {
     };
   }, [serverId, refresh]);
 
-  return { channels, loading, error, refresh };
+  return { channels, categories, loading, error, refresh };
 }
